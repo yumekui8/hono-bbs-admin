@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}板作成 - BBS管理{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/boards">板一覧</a>
+  <span class="breadcrumb-sep">›</span>
+  <span>板作成</span>
+</div>
+
+<div class="page-title">板作成</div>
+
+<div class="card form-section">
+  <form method="POST" action="/boards/new">
+
+    <div class="section-title">基本設定</div>
+
+    <div class="form-group">
+      <label for="board_id">板ID <span class="label-hint">省略時は自動生成。英数字・_・-・. のみ、最大100文字</span></label>
+      <input type="text" id="board_id" name="board_id" placeholder="例: general">
+    </div>
+
+    <div class="form-group">
+      <label for="name">板名 <span style="color: #e53e3e;">*</span></label>
+      <input type="text" id="name" name="name" required placeholder="例: 雑談板">
+    </div>
+
+    <div class="form-group">
+      <label for="description">説明 <span class="label-hint">最大1000文字</span></label>
+      <textarea id="description" name="description" placeholder="板の説明（省略可）"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="category">カテゴリ <span class="label-hint">省略可</span></label>
+      <input type="text" id="category" name="category" placeholder="例: 一般">
+    </div>
+
+    <div class="section-title" style="margin-top: 1.5rem;">権限設定</div>
+
+    <div class="form-group">
+      <label for="administrators">管理者 <span class="label-hint">カンマ区切りの userId/roleId。$CREATOR で作成者に設定</span></label>
+      <input type="text" id="administrators" name="administrators" value="$CREATOR">
+    </div>
+
+    <div class="form-group">
+      <label for="members">メンバー <span class="label-hint">カンマ区切りの userId/roleId</span></label>
+      <input type="text" id="members" name="members" value="">
+    </div>
+
+    <div class="form-group">
+      <label for="permissions">権限 <span class="label-hint">admins,members,users,anon の各ビットマスク (31=全権, 16=GETのみ, 0=アクセス不可)</span></label>
+      <input type="text" id="permissions" name="permissions" value="31,28,24,16">
+    </div>
+
+    <div class="section-title" style="margin-top: 1.5rem;">スレッド・投稿の制限</div>
+
+    <div class="form-group">
+      <label for="max_threads">最大スレッド数 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="max_threads" name="max_threads" value="1000" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="max_thread_title_length">最大スレッドタイトル長 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="max_thread_title_length" name="max_thread_title_length" value="200" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="default_max_posts">デフォルト最大投稿数 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="default_max_posts" name="default_max_posts" value="1000" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="default_max_post_length">デフォルト最大投稿文字数 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="default_max_post_length" name="default_max_post_length" value="2000" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="default_max_post_lines">デフォルト最大投稿行数 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="default_max_post_lines" name="default_max_post_lines" value="100" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="default_max_poster_name_length">デフォルト最大投稿者名長 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="default_max_poster_name_length" name="default_max_poster_name_length" value="50" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="default_max_poster_option_length">デフォルト最大メール欄長 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="default_max_poster_option_length" name="default_max_poster_option_length" value="100" min="0">
+    </div>
+
+    <div class="section-title" style="margin-top: 1.5rem;">投稿デフォルト設定</div>
+
+    <div class="form-group">
+      <label for="default_poster_name">デフォルト投稿者名</label>
+      <input type="text" id="default_poster_name" name="default_poster_name" value="名無しさん">
+    </div>
+
+    <div class="form-group">
+      <label for="default_id_format">IDフォーマット</label>
+      <select id="default_id_format" name="default_id_format">
+        <option value="daily_hash">daily_hash（日毎ハッシュ）</option>
+        <option value="daily_hash_or_user">daily_hash_or_user（ログイン済みはユーザーID）</option>
+        <option value="api_key_hash">api_key_hash（APIキーハッシュ）</option>
+        <option value="api_key_hash_or_user">api_key_hash_or_user</option>
+        <option value="none">none（IDなし）</option>
+      </select>
+    </div>
+
+    <div class="section-title" style="margin-top: 1.5rem;">スレッド作成時の初期値テンプレート</div>
+
+    <div class="form-group">
+      <label for="default_thread_administrators">スレッド管理者 <span class="label-hint">$CREATOR/$PARENTS 使用可</span></label>
+      <input type="text" id="default_thread_administrators" name="default_thread_administrators" value="$CREATOR">
+    </div>
+
+    <div class="form-group">
+      <label for="default_thread_members">スレッドメンバー</label>
+      <input type="text" id="default_thread_members" name="default_thread_members" value="">
+    </div>
+
+    <div class="form-group">
+      <label for="default_thread_permissions">スレッド権限 <span class="label-hint">admins,members,users,anon のビットマスク</span></label>
+      <input type="text" id="default_thread_permissions" name="default_thread_permissions" value="31,28,24,16">
+    </div>
+
+    <div class="section-title" style="margin-top: 1.5rem;">投稿作成時の初期値テンプレート</div>
+
+    <div class="form-group">
+      <label for="default_post_administrators">投稿管理者 <span class="label-hint">$CREATOR/$PARENTS 使用可</span></label>
+      <input type="text" id="default_post_administrators" name="default_post_administrators" value="$CREATOR">
+    </div>
+
+    <div class="form-group">
+      <label for="default_post_members">投稿メンバー</label>
+      <input type="text" id="default_post_members" name="default_post_members" value="">
+    </div>
+
+    <div class="form-group">
+      <label for="default_post_permissions">投稿権限 <span class="label-hint">admins,members,users,anon のビットマスク</span></label>
+      <input type="text" id="default_post_permissions" name="default_post_permissions" value="31,28,24,16">
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">作成</button>
+      <a href="/boards" class="btn btn-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

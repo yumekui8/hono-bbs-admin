@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}ユーザー一覧 - BBS管理{% endblock %}
+
+{% block content %}
+<div class="page-title">ユーザー一覧</div>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>ユーザーID</th>
+        <th>表示名</th>
+        <th>メール</th>
+        <th>有効</th>
+        <th>作成日時</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td><a href="/users/{{ user.id }}">{{ user.id }}</a></td>
+        <td>{{ user.displayName }}</td>
+        <td>{{ user.email or '-' }}</td>
+        <td>
+          {% if user.isActive %}
+          <span class="badge badge-success">有効</span>
+          {% else %}
+          <span class="badge badge-error">無効</span>
+          {% endif %}
+        </td>
+        <td>{{ user.createdAt[:10] if user.createdAt else '-' }}</td>
+        <td>
+          <a href="/users/{{ user.id }}/edit" class="btn btn-sm btn-secondary">編集</a>
+          <form method="POST" action="/users/{{ user.id }}/delete" class="inline"
+                onsubmit="return confirm('ユーザー「{{ user.id }}」を削除しますか？\n投稿は残ります（userIdがnullになります）。')">
+            <button type="submit" class="btn btn-sm btn-danger">削除</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="empty-message">ユーザーが見つかりません。</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if limit and limit > 0 %}
+  <div class="pagination">
+    {% if page > 1 %}
+    <a href="/users?page={{ page - 1 }}" class="btn btn-sm btn-secondary">← 前のページ</a>
+    {% endif %}
+    <span>ページ {{ page }}</span>
+    {% if users | length >= limit %}
+    <a href="/users?page={{ page + 1 }}" class="btn btn-sm btn-secondary">次のページ →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}{{ board.name }} - スレッド一覧 - BBS管理{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/boards">板一覧</a>
+  <span class="breadcrumb-sep">›</span>
+  <span>{{ board.name }}</span>
+</div>
+
+<div class="page-title">
+  <span>{{ board.name }} — スレッド一覧</span>
+  <a href="/boards/{{ board.id }}/edit" class="btn btn-sm btn-secondary">板を編集</a>
+</div>
+
+{% if threads %}
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>タイトル</th>
+        <th>投稿数</th>
+        <th>投稿者名</th>
+        <th>IDフォーマット</th>
+        <th>作成日時</th>
+        <th>更新日時</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for thread in threads %}
+      <tr>
+        <td>
+          <a href="/boards/{{ board.id }}/{{ thread.id }}">{{ thread.title }}</a>
+          {% if thread.firstPost %}
+          <div class="text-muted text-truncate" style="font-size: 12px; margin-top: 2px;">
+            {{ thread.firstPost.content[:80] }}{% if thread.firstPost.content|length > 80 %}…{% endif %}
+          </div>
+          {% endif %}
+        </td>
+        <td>{{ thread.postCount }}</td>
+        <td>{{ thread.posterName or board.defaultPosterName or '-' }}</td>
+        <td><code>{{ thread.idFormat or board.defaultIdFormat or '-' }}</code></td>
+        <td class="mono">{{ thread.createdAt[:10] if thread.createdAt else '-' }}</td>
+        <td class="mono">{{ thread.updatedAt[:10] if thread.updatedAt else '-' }}</td>
+        <td class="td-actions">
+          <div class="btn-group">
+            <a href="/boards/{{ board.id }}/{{ thread.id }}/edit" class="btn btn-sm btn-secondary">編集</a>
+            <form method="POST" action="/boards/{{ board.id }}/{{ thread.id }}/delete" class="inline"
+                  onsubmit="return confirm('スレッド「{{ thread.title }}」を削除しますか?\n投稿もすべて削除されます。')">
+              <button type="submit" class="btn btn-sm btn-danger">削除</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-title">スレッドがありません</div>
+</div>
+{% endif %}
+{% endblock %}

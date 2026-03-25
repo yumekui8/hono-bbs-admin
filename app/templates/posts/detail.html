@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}レス{{ post.postNumber }} 詳細 - BBS管理{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/boards">板一覧</a>
+  <span class="breadcrumb-sep">›</span>
+  <a href="/boards/{{ board_id }}">{{ board_id }}</a>
+  <span class="breadcrumb-sep">›</span>
+  <a href="/boards/{{ board_id }}/{{ thread_id }}">{{ thread_id }}</a>
+  <span class="breadcrumb-sep">›</span>
+  <span>レス{{ post.postNumber }}</span>
+</div>
+
+<div class="page-title">
+  <span>
+    レス{{ post.postNumber }} — 投稿詳細
+    {% if post.isDeleted %}<span class="badge badge-danger" style="font-size: 14px;">削除済</span>{% endif %}
+    {% if post.isEdited %}<span class="badge badge-warning" style="font-size: 14px;">編集済</span>{% endif %}
+  </span>
+  <div class="btn-group">
+    {% if not post.isDeleted %}
+    <a href="/boards/{{ board_id }}/{{ thread_id }}/{{ post.postNumber }}/edit" class="btn btn-secondary">内容を編集</a>
+    <form method="POST" action="/boards/{{ board_id }}/{{ thread_id }}/{{ post.postNumber }}/delete" class="inline"
+          onsubmit="return confirm('レス{{ post.postNumber }}を削除しますか？\n（内容が削除マーカーに置き換わります）')">
+      <button type="submit" class="btn btn-danger">このレスを削除</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<!-- 基本情報 -->
+<div class="card">
+  <div class="section-title">基本情報</div>
+  <table class="detail-table">
+    <tr>
+      <th>投稿ID</th>
+      <td class="mono">{{ post.id }}</td>
+    </tr>
+    <tr>
+      <th>レス番号</th>
+      <td>{{ post.postNumber }}</td>
+    </tr>
+    <tr>
+      <th>スレッドID</th>
+      <td class="mono">{{ post.threadId }}</td>
+    </tr>
+    <tr>
+      <th>投稿者名</th>
+      <td>{{ post.posterName }}</td>
+    </tr>
+    <tr>
+      <th>メール欄 (posterOptionInfo)</th>
+      <td>{{ post.posterOptionInfo or '-' }}</td>
+    </tr>
+    <tr>
+      <th>表示ID (authorId)</th>
+      <td class="mono">{{ post.authorId or '-' }}</td>
+    </tr>
+    <tr>
+      <th>管理者</th>
+      <td class="mono">{{ post.administrators or '-' }}</td>
+    </tr>
+    <tr>
+      <th>メンバー</th>
+      <td class="mono">{{ post.members or '-' }}</td>
+    </tr>
+    <tr>
+      <th>権限</th>
+      <td class="mono">{{ post.permissions }}</td>
+    </tr>
+    <tr>
+      <th>投稿日時</th>
+      <td class="mono">{{ post.createdAt }}</td>
+    </tr>
+    <tr>
+      <th>削除済み</th>
+      <td>
+        {% if post.isDeleted %}
+        <span class="badge badge-danger">はい (isDeleted=true)</span>
+        {% else %}
+        <span class="badge badge-info">いいえ</span>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>編集済み</th>
+      <td>
+        {% if post.isEdited %}
+        <span class="badge badge-warning">はい</span>
+        {% if post.editedAt %}<span class="mono" style="margin-left: 8px;">{{ post.editedAt }}</span>{% endif %}
+        {% else %}
+        <span class="badge badge-info">いいえ</span>
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- 内容 -->
+<div class="card">
+  <div class="section-title">投稿内容</div>
+  <div style="white-space: pre-wrap; word-break: break-word; line-height: 1.6;">{{ post.content }}</div>
+</div>
+
+<!-- adminMeta -->
+{% if post.adminMeta %}
+<div class="card">
+  <div class="section-title">管理者情報 (adminMeta)</div>
+  <table class="detail-table">
+    <tr>
+      <th>作成者ユーザID</th>
+      <td class="mono">
+        {% if post.adminMeta.creatorUserId %}{{ post.adminMeta.creatorUserId }}{% else %}<span class="text-muted">匿名 / null</span>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>作成時セッションID</th>
+      <td class="mono">{{ post.adminMeta.creatorSessionId or '-' }}</td>
+    </tr>
+    <tr>
+      <th>TurnstileセッションID</th>
+      <td class="mono">{{ post.adminMeta.creatorTurnstileSessionId or '-' }}</td>
+    </tr>
+  </table>
+</div>
+{% endif %}
+
+<!-- 生のAPIレスポンス -->
+<div class="card">
+  <div class="section-title">APIレスポンス (生データ)</div>
+  <pre class="code-block">{{ post | tojson(indent=2) }}</pre>
+</div>
+
+<div style="margin-top: 16px;">
+  <a href="/boards/{{ board_id }}/{{ thread_id }}" class="btn btn-secondary">← 投稿一覧に戻る</a>
+</div>
+{% endblock %}

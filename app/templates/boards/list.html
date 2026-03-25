@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}板一覧 - BBS管理{% endblock %}
+
+{% block content %}
+<div class="page-title">
+  <span>板一覧</span>
+  <a href="/boards/new" class="btn btn-primary">+ 板を作成</a>
+</div>
+
+{% if boards %}
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>名前</th>
+        <th>説明</th>
+        <th>スレッド数上限</th>
+        <th>権限</th>
+        <th>カテゴリ</th>
+        <th>作成日時</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for board in boards %}
+      <tr>
+        <td><code>{{ board.id }}</code></td>
+        <td>
+          <a href="/boards/{{ board.id }}">{{ board.name }}</a>
+        </td>
+        <td class="text-truncate">
+          {% if board.description %}{{ board.description }}{% else %}<span class="text-muted">-</span>{% endif %}
+        </td>
+        <td>{{ board.maxThreads }}</td>
+        <td><code>{{ board.permissions }}</code></td>
+        <td>
+          {% if board.category %}
+          <span class="badge badge-info">{{ board.category }}</span>
+          {% else %}
+          <span class="text-muted">-</span>
+          {% endif %}
+        </td>
+        <td class="mono">{{ board.createdAt[:10] if board.createdAt else '-' }}</td>
+        <td class="td-actions">
+          <div class="btn-group">
+            <a href="/boards/{{ board.id }}/edit" class="btn btn-sm btn-secondary">編集</a>
+            <form method="POST" action="/boards/{{ board.id }}/delete" class="inline"
+                  onsubmit="return confirm('板「{{ board.name }}」を削除しますか?\nスレッドと投稿もすべて削除されます。')">
+              <button type="submit" class="btn btn-sm btn-danger">削除</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-title">板がありません</div>
+  <p>「板を作成」ボタンから最初の板を作成してください。</p>
+</div>
+{% endif %}
+{% endblock %}

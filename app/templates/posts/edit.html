@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}レス{{ post.postNumber }} 編集 - BBS管理{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/boards">板一覧</a>
+  <span class="breadcrumb-sep">›</span>
+  <a href="/boards/{{ board_id }}">{{ board_id }}</a>
+  <span class="breadcrumb-sep">›</span>
+  <a href="/boards/{{ board_id }}/{{ thread_id }}">{{ thread_id }}</a>
+  <span class="breadcrumb-sep">›</span>
+  <a href="/boards/{{ board_id }}/{{ thread_id }}/{{ post.postNumber }}">レス{{ post.postNumber }}</a>
+  <span class="breadcrumb-sep">›</span>
+  <span>編集</span>
+</div>
+
+<div class="page-title">レス{{ post.postNumber }} — 内容編集</div>
+
+<div class="card form-section" style="max-width: 720px;">
+  <div style="margin-bottom: 16px; font-size: 13px; color: #666;">
+    <strong>表示ID (authorId):</strong> {{ post.authorId or '-' }}
+    &nbsp;|&nbsp;
+    <strong>投稿日時:</strong> {{ post.createdAt[:19].replace('T', ' ') if post.createdAt else '-' }}
+  </div>
+
+  <form method="POST" action="/boards/{{ board_id }}/{{ thread_id }}/{{ post.postNumber }}/edit">
+    <div class="form-group">
+      <label for="poster_name">投稿者名 <span class="label-hint">空欄で変更なし</span></label>
+      <input type="text" id="poster_name" name="poster_name" value="{{ post.posterName }}">
+    </div>
+
+    <div class="form-group">
+      <label for="poster_option_info">メール欄 (posterOptionInfo) <span class="label-hint">空欄でクリア</span></label>
+      <input type="text" id="poster_option_info" name="poster_option_info" value="{{ post.posterOptionInfo or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="content">本文 <span style="color: #e53e3e;">*</span></label>
+      <textarea id="content" name="content" style="min-height: 200px;" required>{{ post.content }}</textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">更新 (PUT)</button>
+      <a href="/boards/{{ board_id }}/{{ thread_id }}/{{ post.postNumber }}" class="btn btn-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

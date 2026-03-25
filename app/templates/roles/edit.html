@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}ロール編集 - {{ role.id }} - BBS管理{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/roles">ロール一覧</a>
+  <span class="breadcrumb-sep">›</span>
+  <a href="/roles/{{ role.id }}">{{ role.id }}</a>
+  <span class="breadcrumb-sep">›</span>
+  <span>編集</span>
+</div>
+
+<div class="page-title">ロール編集: {{ role.id }}</div>
+
+<div class="card form-section">
+  <form method="POST" action="/roles/{{ role.id }}/edit">
+    <div class="form-group">
+      <label>ロールID <span class="label-hint">変更不可</span></label>
+      <input type="text" value="{{ role.id }}" disabled>
+    </div>
+
+    <div class="form-group">
+      <label for="name">新しいロール名 <span style="color: #e53e3e;">*</span></label>
+      <input type="text" id="name" name="name" value="{{ role.name or role.id }}" required
+             pattern="[a-zA-Z0-9_\-]+"
+             title="英数字・ハイフン・アンダーバーのみ">
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">更新</button>
+      <a href="/roles/{{ role.id }}" class="btn btn-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

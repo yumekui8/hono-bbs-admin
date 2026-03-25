@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}ロール一覧 - BBS管理{% endblock %}
+
+{% block content %}
+<div class="page-title">ロール一覧</div>
+
+<div style="margin-bottom: 1rem;">
+  <a href="/roles/new" class="btn btn-primary">+ 新規ロール作成</a>
+</div>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>ロールID</th>
+        <th>作成日時</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for role in roles %}
+      <tr>
+        <td>
+          <a href="/roles/{{ role.id }}">{{ role.id }}</a>
+          {% if role.id in system_roles %}
+          <span class="badge badge-info">システム</span>
+          {% endif %}
+        </td>
+        <td>{{ role.createdAt[:10] if role.createdAt else '-' }}</td>
+        <td>
+          {% if role.id not in system_roles %}
+          <a href="/roles/{{ role.id }}/edit" class="btn btn-sm btn-secondary">編集</a>
+          <form method="POST" action="/roles/{{ role.id }}/delete" class="inline"
+                onsubmit="return confirm('ロール「{{ role.id }}」を削除しますか？')">
+            <button type="submit" class="btn btn-sm btn-danger">削除</button>
+          </form>
+          {% else %}
+          <span class="text-muted">変更不可</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="3" class="empty-message">ロールが見つかりません。</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if limit and limit > 0 %}
+  <div class="pagination">
+    {% if page > 1 %}
+    <a href="/roles?page={{ page - 1 }}" class="btn btn-sm btn-secondary">← 前のページ</a>
+    {% endif %}
+    <span>ページ {{ page }}</span>
+    {% if roles | length >= limit %}
+    <a href="/roles?page={{ page + 1 }}" class="btn btn-sm btn-secondary">次のページ →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

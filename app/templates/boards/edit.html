@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}板編集 - {{ board.name }} - BBS管理{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/boards">板一覧</a>
+  <span class="breadcrumb-sep">›</span>
+  <span>{{ board.name }}</span>
+  <span class="breadcrumb-sep">›</span>
+  <span>編集</span>
+</div>
+
+<div class="page-title">板編集: {{ board.name }}</div>
+
+<div class="card form-section">
+  <form method="POST" action="/boards/{{ board.id }}/edit">
+    <div class="form-group">
+      <label>板ID</label>
+      <input type="text" value="{{ board.id }}" disabled>
+    </div>
+
+    <div class="form-group">
+      <label for="name">板名 <span style="color: #e53e3e;">*</span></label>
+      <input type="text" id="name" name="name" value="{{ board.name }}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="description">説明</label>
+      <textarea id="description" name="description">{{ board.description or '' }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="category">カテゴリ <span class="label-hint">空欄で削除</span></label>
+      <input type="text" id="category" name="category" value="{{ board.category or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="administrators">管理者 <span class="label-hint">カンマ区切りの userId/roleId。$CREATOR 使用可</span></label>
+      <input type="text" id="administrators" name="administrators" value="{{ board.administrators or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="members">メンバー <span class="label-hint">カンマ区切りの userId/roleId</span></label>
+      <input type="text" id="members" name="members" value="{{ board.members or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="permissions">権限 <span class="label-hint">admins,members,users,anon のビットマスク (31=全権, 16=GETのみ)</span></label>
+      <input type="text" id="permissions" name="permissions" value="{{ board.permissions }}">
+    </div>
+
+    <div class="form-group">
+      <label for="max_threads">最大スレッド数 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="max_threads" name="max_threads" value="{{ board.maxThreads }}" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="max_thread_title_length">最大スレッドタイトル長 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="max_thread_title_length" name="max_thread_title_length" value="{{ board.maxThreadTitleLength }}" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="default_poster_name">デフォルト投稿者名</label>
+      <input type="text" id="default_poster_name" name="default_poster_name" value="{{ board.defaultPosterName }}">
+    </div>
+
+    <div class="form-group">
+      <label for="default_id_format">IDフォーマット</label>
+      <select id="default_id_format" name="default_id_format">
+        {% for fmt in ['daily_hash', 'daily_hash_or_user', 'api_key_hash', 'api_key_hash_or_user', 'none'] %}
+        <option value="{{ fmt }}" {% if board.defaultIdFormat == fmt %}selected{% endif %}>{{ fmt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="default_max_posts">デフォルト最大投稿数 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="default_max_posts" name="default_max_posts" value="{{ board.defaultMaxPosts }}" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="default_max_post_length">デフォルト最大投稿文字数 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="default_max_post_length" name="default_max_post_length" value="{{ board.defaultMaxPostLength }}" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="default_max_post_lines">デフォルト最大投稿行数 <span class="label-hint">0=無制限</span></label>
+      <input type="number" id="default_max_post_lines" name="default_max_post_lines" value="{{ board.defaultMaxPostLines }}" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="default_thread_administrators">デフォルトスレッド管理者 <span class="label-hint">$CREATOR/$PARENTS 使用可</span></label>
+      <input type="text" id="default_thread_administrators" name="default_thread_administrators" value="{{ board.defaultThreadAdministrators or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="default_thread_members">デフォルトスレッドメンバー</label>
+      <input type="text" id="default_thread_members" name="default_thread_members" value="{{ board.defaultThreadMembers or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="default_thread_permissions">デフォルトスレッド権限 <span class="label-hint">admins,members,users,anon のビットマスク</span></label>
+      <input type="text" id="default_thread_permissions" name="default_thread_permissions" value="{{ board.defaultThreadPermissions }}">
+    </div>
+
+    <div class="form-group">
+      <label for="default_post_administrators">デフォルト投稿管理者 <span class="label-hint">$CREATOR/$PARENTS 使用可</span></label>
+      <input type="text" id="default_post_administrators" name="default_post_administrators" value="{{ board.defaultPostAdministrators or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="default_post_members">デフォルト投稿メンバー</label>
+      <input type="text" id="default_post_members" name="default_post_members" value="{{ board.defaultPostMembers or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="default_post_permissions">デフォルト投稿権限 <span class="label-hint">admins,members,users,anon のビットマスク</span></label>
+      <input type="text" id="default_post_permissions" name="default_post_permissions" value="{{ board.defaultPostPermissions }}">
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">更新 (PATCH)</button>
+      <a href="/boards" class="btn btn-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+
+{% if board.adminMeta %}
+<div class="card" style="max-width: 640px;">
+  <div class="section-title">管理者情報 (adminMeta)</div>
+  <table class="detail-table">
+    <tr>
+      <th>作成者ユーザID</th>
+      <td>{{ board.adminMeta.creatorUserId or '-' }}</td>
+    </tr>
+    <tr>
+      <th>作成時セッションID</th>
+      <td class="mono">{{ board.adminMeta.creatorSessionId or '-' }}</td>
+    </tr>
+    <tr>
+      <th>TurnstileセッションID</th>
+      <td class="mono">{{ board.adminMeta.creatorTurnstileSessionId or '-' }}</td>
+    </tr>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

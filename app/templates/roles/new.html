@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}ロール作成 - BBS管理{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/roles">ロール一覧</a>
+  <span class="breadcrumb-sep">›</span>
+  <span>新規作成</span>
+</div>
+
+<div class="page-title">ロール作成</div>
+
+<div class="card form-section">
+  <form method="POST" action="/roles/new">
+    <div class="form-group">
+      <label for="name">ロールID/名前 <span style="color: #e53e3e;">*</span></label>
+      <input type="text" id="name" name="name" required
+             placeholder="例: moderators"
+             pattern="[a-zA-Z0-9_\-]+"
+             title="英数字・ハイフン・アンダーバーのみ">
+      <span class="label-hint">英数字・ハイフン・アンダーバーのみ、最大100文字</span>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">作成</button>
+      <a href="/roles" class="btn btn-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

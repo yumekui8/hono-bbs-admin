@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}ログイン - BBS管理{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-title">BBS管理者ログイン</div>
+    <div class="login-subtitle">管理者アカウントでログインしてください</div>
+
+    <form method="POST" action="/login">
+      <div class="form-group">
+        <label for="user_id">ユーザID</label>
+        <input type="text" id="user_id" name="user_id" autocomplete="username" required autofocus>
+      </div>
+
+      <div class="form-group">
+        <label for="password">パスワード</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required>
+      </div>
+
+      {% if enable_turnstile %}
+      <div class="form-group">
+        <label for="turnstile_session_id">TurnstileセッションID</label>
+        <input type="text" id="turnstile_session_id" name="turnstile_session_id"
+               placeholder="turnstileApiTokenプラグインで取得したセッションID" required>
+      </div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary" style="width: 100%;">ログイン</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

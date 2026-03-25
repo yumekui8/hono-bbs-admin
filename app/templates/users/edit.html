@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}ユーザー編集 - {{ user.id }} - BBS管理{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/users">ユーザー一覧</a>
+  <span class="breadcrumb-sep">›</span>
+  <a href="/users/{{ user.id }}">{{ user.id }}</a>
+  <span class="breadcrumb-sep">›</span>
+  <span>編集</span>
+</div>
+
+<div class="page-title">ユーザー編集: {{ user.id }}</div>
+
+<div class="card form-section">
+  <form method="POST" action="/users/{{ user.id }}/edit">
+    <div class="form-group">
+      <label>ユーザーID <span class="label-hint">変更不可</span></label>
+      <input type="text" value="{{ user.id }}" disabled>
+    </div>
+
+    <div class="form-group">
+      <label for="display_name">表示名</label>
+      <input type="text" id="display_name" name="display_name" value="{{ user.displayName }}">
+    </div>
+
+    <div class="form-group">
+      <label for="bio">自己紹介 <span class="label-hint">空欄で削除</span></label>
+      <textarea id="bio" name="bio">{{ user.bio or '' }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="email">メール <span class="label-hint">空欄で削除</span></label>
+      <input type="email" id="email" name="email" value="{{ user.email or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="is_active">アカウント状態</label>
+      <select id="is_active" name="is_active">
+        <option value="true" {% if user.isActive %}selected{% endif %}>有効</option>
+        <option value="false" {% if not user.isActive %}selected{% endif %}>無効</option>
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">更新</button>
+      <a href="/users/{{ user.id }}" class="btn btn-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

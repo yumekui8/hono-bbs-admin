@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}ユーザー詳細 - {{ user.id }} - BBS管理{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/users">ユーザー一覧</a>
+  <span class="breadcrumb-sep">›</span>
+  <span>{{ user.id }}</span>
+</div>
+
+<div class="page-title">ユーザー: {{ user.id }}</div>
+
+<div class="card" style="max-width: 640px;">
+  <table class="detail-table">
+    <tr>
+      <th>ユーザーID</th>
+      <td class="mono">{{ user.id }}</td>
+    </tr>
+    <tr>
+      <th>表示名</th>
+      <td>{{ user.displayName }}</td>
+    </tr>
+    <tr>
+      <th>自己紹介</th>
+      <td>{{ user.bio or '-' }}</td>
+    </tr>
+    <tr>
+      <th>メール</th>
+      <td>{{ user.email or '-' }}</td>
+    </tr>
+    <tr>
+      <th>アカウント状態</th>
+      <td>
+        {% if user.isActive %}
+        <span class="badge badge-success">有効</span>
+        {% else %}
+        <span class="badge badge-error">無効</span>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>プライマリロール</th>
+      <td>{{ user.primaryRoleId or '-' }}</td>
+    </tr>
+    <tr>
+      <th>作成日時</th>
+      <td>{{ user.createdAt or '-' }}</td>
+    </tr>
+    <tr>
+      <th>更新日時</th>
+      <td>{{ user.updatedAt or '-' }}</td>
+    </tr>
+  </table>
+
+  <div class="form-actions" style="margin-top: 1rem;">
+    <a href="/users/{{ user.id }}/edit" class="btn btn-primary">編集</a>
+    <form method="POST" action="/users/{{ user.id }}/delete" class="inline"
+          onsubmit="return confirm('ユーザー「{{ user.id }}」を削除しますか？\n投稿は残ります（userIdがnullになります）。')">
+      <button type="submit" class="btn btn-danger">削除</button>
+    </form>
+    <a href="/users" class="btn btn-secondary">一覧に戻る</a>
+  </div>
+</div>
+{% endblock %}

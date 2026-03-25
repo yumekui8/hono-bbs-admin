@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}スレッド編集 - {{ thread.title }} - BBS管理{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/boards">板一覧</a>
+  <span class="breadcrumb-sep">›</span>
+  <a href="/boards/{{ board_id }}">{{ board_id }}</a>
+  <span class="breadcrumb-sep">›</span>
+  <span class="text-truncate" style="max-width: 200px; display: inline-block; vertical-align: middle;">{{ thread.title }}</span>
+  <span class="breadcrumb-sep">›</span>
+  <span>編集</span>
+</div>
+
+<div class="page-title">スレッド編集</div>
+
+<div class="card form-section">
+  <div class="section-title">タイトル・投稿者名の編集 <span class="label-hint">isEdited フラグが立ちます</span></div>
+  <form method="POST" action="/boards/{{ board_id }}/{{ thread.id }}/edit">
+    <div class="form-group">
+      <label>スレッドID</label>
+      <input type="text" value="{{ thread.id }}" disabled>
+    </div>
+
+    <div class="form-group">
+      <label for="title">タイトル</label>
+      <input type="text" id="title" name="title" value="{{ thread.title }}">
+    </div>
+
+    <div class="form-group">
+      <label for="poster_name">投稿者名 <span class="label-hint">空欄でクリア</span></label>
+      <input type="text" id="poster_name" name="poster_name" value="{{ thread.posterName or '' }}">
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">更新 (PUT)</button>
+      <a href="/boards/{{ board_id }}" class="btn btn-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+
+<div class="card form-section">
+  <div class="section-title">スレッド設定 <span class="label-hint">isEdited フラグは変化しません</span></div>
+  <form method="POST" action="/boards/{{ board_id }}/{{ thread.id }}/settings">
+    <div class="form-group">
+      <label for="administrators">管理者 <span class="label-hint">カンマ区切りの userId/roleId。$CREATOR/$PARENTS 使用可</span></label>
+      <input type="text" id="administrators" name="administrators" value="{{ thread.administrators or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="members">メンバー <span class="label-hint">カンマ区切りの userId/roleId</span></label>
+      <input type="text" id="members" name="members" value="{{ thread.members or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="permissions">権限 <span class="label-hint">admins,members,users,anon のビットマスク (31=全権, 16=GETのみ)</span></label>
+      <input type="text" id="permissions" name="permissions" value="{{ thread.permissions }}">
+    </div>
+
+    <div class="form-group">
+      <label for="max_posts">最大投稿数 <span class="label-hint">0=板のデフォルト継承</span></label>
+      <input type="number" id="max_posts" name="max_posts" value="{{ thread.maxPosts }}" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="max_post_length">最大投稿文字数 <span class="label-hint">0=板のデフォルト継承</span></label>
+      <input type="number" id="max_post_length" name="max_post_length" value="{{ thread.maxPostLength }}" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="max_post_lines">最大投稿行数 <span class="label-hint">0=板のデフォルト継承</span></label>
+      <input type="number" id="max_post_lines" name="max_post_lines" value="{{ thread.maxPostLines }}" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="id_format">IDフォーマット <span class="label-hint">空欄で板のデフォルト継承</span></label>
+      <select id="id_format" name="id_format">
+        <option value="">（板のデフォルト）</option>
+        {% for fmt in ['daily_hash', 'daily_hash_or_user', 'api_key_hash', 'api_key_hash_or_user', 'none'] %}
+        <option value="{{ fmt }}" {% if thread.idFormat == fmt %}selected{% endif %}>{{ fmt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">更新 (PATCH)</button>
+      <a href="/boards/{{ board_id }}" class="btn btn-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+
+{% if thread.adminMeta %}
+<div class="card" style="max-width: 640px;">
+  <div class="section-title">管理者情報 (adminMeta)</div>
+  <table class="detail-table">
+    <tr>
+      <th>作成者ユーザID</th>
+      <td>{{ thread.adminMeta.creatorUserId or '-' }}</td>
+    </tr>
+    <tr>
+      <th>作成時セッションID</th>
+      <td class="mono">{{ thread.adminMeta.creatorSessionId or '-' }}</td>
+    </tr>
+    <tr>
+      <th>TurnstileセッションID</th>
+      <td class="mono">{{ thread.adminMeta.creatorTurnstileSessionId or '-' }}</td>
+    </tr>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

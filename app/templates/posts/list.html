@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ thread.title }} - 投稿一覧 - BBS管理{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="/boards">板一覧</a>
+  <span class="breadcrumb-sep">›</span>
+  <a href="/boards/{{ board_id }}">{{ board_id }}</a>
+  <span class="breadcrumb-sep">›</span>
+  <span>{{ thread.title }}</span>
+</div>
+
+<div class="page-title">
+  <span>{{ thread.title }}</span>
+  <div class="btn-group">
+    <a href="/boards/{{ board_id }}/{{ thread.id }}/edit" class="btn btn-sm btn-secondary">スレッド編集</a>
+    <form method="POST" action="/boards/{{ board_id }}/{{ thread.id }}/delete" class="inline"
+          onsubmit="return confirm('スレッド「{{ thread.title }}」を削除しますか?\n投稿もすべて削除されます。')">
+      <button type="submit" class="btn btn-sm btn-danger">スレッド削除</button>
+    </form>
+  </div>
+</div>
+
+<div style="margin-bottom: 16px; font-size: 13px; color: #666;">
+  投稿数: <strong>{{ posts|length }}</strong> /
+  上限: <strong>{{ thread.maxPosts or '板のデフォルト' }}</strong>
+</div>
+
+{% if posts %}
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 48px;">No.</th>
+        <th>投稿者</th>
+        <th>表示ID</th>
+        <th>内容</th>
+        <th>投稿日時</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for post in posts %}
+      <tr {% if post.isDeleted %}style="opacity: 0.6;"{% endif %}>
+        <td class="mono">{{ post.postNumber }}</td>
+        <td>
+          {{ post.posterName }}
+          {% if post.posterOptionInfo %}
+          <span class="text-muted">（{{ post.posterOptionInfo }}）</span>
+          {% endif %}
+          {% if post.isDeleted %}
+          <br><span class="badge badge-danger">削除済</span>
+          {% endif %}
+        </td>
+        <td class="mono">{{ post.authorId or '-' }}</td>
+        <td style="max-width: 400px; word-break: break-word; white-space: pre-wrap;">{{ post.content }}</td>
+        <td class="mono" style="white-space: nowrap;">{{ post.createdAt[:19].replace('T', ' ') if post.createdAt else '-' }}</td>
+        <td class="td-actions">
+          <div class="btn-group">
+            <a href="/boards/{{ board_id }}/{{ thread.id }}/{{ post.postNumber }}" class="btn btn-sm btn-secondary">詳細</a>
+            {% if not post.isDeleted %}
+            <a href="/boards/{{ board_id }}/{{ thread.id }}/{{ post.postNumber }}/edit" class="btn btn-sm btn-secondary">編集</a>
+            <form method="POST" action="/boards/{{ board_id }}/{{ thread.id }}/{{ post.postNumber }}/delete" class="inline"
+                  onsubmit="return confirm('レス{{ post.postNumber }}を削除しますか？\n（内容が削除マーカーに置き換わります）')">
+              <button type="submit" class="btn btn-sm btn-danger">削除</button>
+            </form>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-title">投稿がありません</div>
+</div>
+{% endif %}
+{% endblock %}

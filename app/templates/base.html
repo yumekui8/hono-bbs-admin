@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}BBS管理{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/boards" class="site-title">BBS管理</a>
+      {% if user_id %}
+      <nav class="header-nav">
+        <a href="/boards">板</a>
+        <a href="/users">ユーザー</a>
+        <a href="/roles">ロール</a>
+      </nav>
+      <div class="header-right">
+        <span class="user-info">{{ display_name }}</span>
+        <form method="POST" action="/logout" class="inline">
+          <button type="submit" class="btn btn-sm btn-secondary">ログアウト</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </header>
+
+  <main>
+    {% if messages %}
+    <div class="messages">
+      {% for msg in messages %}
+      <div class="message {{ msg.level }}">{{ msg.text }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
